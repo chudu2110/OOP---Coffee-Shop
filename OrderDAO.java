@@ -16,10 +16,10 @@ public class OrderDAO {
         this.menuItemDAO = new MenuItemDAO();
     }
     
-    // Create a new order
+    // Create a new order (matches current schema)
     public int createOrder(Order order) {
-        String orderQuery = "INSERT INTO orders (customer_id, table_id, service_type, status, total_amount, notes) " +
-                           "VALUES (?, ?, ?, ?, ?, ?)";
+        String orderQuery = "INSERT INTO orders (customer_id, status, service_type, table_number, subtotal, tax, discount, total_amount, special_instructions) " +
+                           "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         Connection conn = dbConnection.getConnection();
         
@@ -27,17 +27,20 @@ public class OrderDAO {
             conn.setAutoCommit(false);
             
             // Insert order
-            try (PreparedStatement pstmt = conn.prepareStatement(orderQuery)) {
+            try (PreparedStatement pstmt = conn.prepareStatement(orderQuery, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setInt(1, order.getCustomerId());
-                if (order.getTableNumber() > 0) {
-                    pstmt.setInt(2, order.getTableNumber());
-                } else {
-                    pstmt.setNull(2, Types.INTEGER);
-                }
+                pstmt.setString(2, order.getStatus().toString());
                 pstmt.setString(3, order.getServiceType().toString());
-                pstmt.setString(4, order.getStatus().toString());
-                pstmt.setDouble(5, order.getTotalAmount());
-                pstmt.setString(6, order.getSpecialInstructions());
+                if (order.getServiceType() == Order.ServiceType.DINE_IN && order.getTableNumber() > 0) {
+                    pstmt.setInt(4, order.getTableNumber());
+                } else {
+                    pstmt.setNull(4, Types.INTEGER);
+                }
+                pstmt.setDouble(5, order.getSubtotal());
+                pstmt.setDouble(6, order.getTax());
+                pstmt.setDouble(7, order.getDiscount());
+                pstmt.setDouble(8, order.getTotalAmount());
+                pstmt.setString(9, order.getSpecialInstructions());
                 
                 int rowsAffected = pstmt.executeUpdate();
                 
@@ -77,8 +80,8 @@ public class OrderDAO {
     
     // Insert order items
     private boolean insertOrderItems(int orderId, List<OrderItem> orderItems, Connection conn) throws SQLException {
-        String itemQuery = "INSERT INTO order_items (order_id, menu_item_id, quantity, unit_price, customizations) " +
-                          "VALUES (?, ?, ?, ?, ?)";
+        String itemQuery = "INSERT INTO order_items (order_id, menu_item_id, quantity, unit_price, total_price, customizations) " +
+                          "VALUES (?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement pstmt = conn.prepareStatement(itemQuery)) {
             for (OrderItem item : orderItems) {
@@ -86,7 +89,8 @@ public class OrderDAO {
                 pstmt.setInt(2, item.getMenuItem().getId());
                 pstmt.setInt(3, item.getQuantity());
                 pstmt.setDouble(4, item.getUnitPrice());
-                pstmt.setString(5, item.getCustomizations());
+                pstmt.setDouble(5, item.getItemTotal());
+                pstmt.setString(6, item.getCustomizations());
                 
                 pstmt.addBatch();
             }

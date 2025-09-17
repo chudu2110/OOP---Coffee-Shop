@@ -71,7 +71,7 @@ The following JAR files should be present in the project directory:
 javac -cp . *.java
 ```
 
-### 4. Run the Application
+### 4. Run the Application (Console main)
 ```bash
 java -cp ".;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar" CoffeeShopApp
 ```
@@ -80,6 +80,32 @@ java -cp ".;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar" CoffeeShopApp
 ```bash
 java -cp ".:sqlite-jdbc.jar:slf4j-api.jar:slf4j-simple.jar" CoffeeShopApp
 ```
+
+## Desktop Frontend
+
+Two minimal UIs are provided:
+
+- **JavaFX**: `CoffeeShopFXApp`
+- **Swing**: `CoffeeShopSwingApp`
+
+Both load categories and available menu items, allow adding items to a cart, and show totals. They initialize the database on first run and insert sample data.
+
+### Run Swing (no JavaFX needed)
+```powershell
+cd D:\OOP---Coffee-Shop
+javac -cp .;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar *.java
+java -cp .;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar CoffeeShopSwingApp
+```
+
+### Run JavaFX
+Requires JavaFX SDK. Set `PATH_TO_FX` to the SDK `lib` directory.
+```powershell
+$env:PATH_TO_FX="C:\\javafx-sdk-21\\lib"
+javac --module-path $env:PATH_TO_FX -cp .;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar --add-modules javafx.controls *.java
+java  --module-path $env:PATH_TO_FX -cp .;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar --add-modules javafx.controls CoffeeShopFXApp
+```
+
+The app will create `coffee_shop.db` in the project folder on first run and seed sample data.
 
 ## Usage Guide
 
@@ -128,6 +154,8 @@ The system uses SQLite database with the following main tables:
 ```
 ├── Coffee.java              # Coffee item implementation
 ├── CoffeeShopApp.java       # Main application entry point
+├── CoffeeShopFXApp.java     # JavaFX UI (browse menu, cart)
+├── CoffeeShopSwingApp.java  # Swing UI (browse menu, cart)
 ├── Customer.java            # Customer entity
 ├── CustomerDAO.java         # Customer data access
 ├── CustomerView.java        # Customer interface
@@ -167,6 +195,19 @@ The system uses SQLite database with the following main tables:
 ### Abstraction
 - DAO pattern for database operations
 - Abstract interfaces for common operations
+
+## Mobile App Notes
+
+This codebase is desktop-first (JavaFX/Swing). To package for mobile:
+
+- **JavaFX Mobile via Gluon**:
+  - Use Gluon Client/`gluonfx-maven-plugin` to build native Android/iOS from JavaFX.
+  - Refactor the JavaFX UI into modules compatible with Gluon (avoid Swing).
+  - Include JavaFX modules for target platforms.
+
+- **Alternative**: Build a separate mobile frontend (Flutter/React Native/Kotlin) and expose a backend API (e.g., Spring Boot) that reuses this database schema. Migrate DAOs to a service layer and create REST endpoints.
+
+These paths require additional setup beyond this repository.
 
 ## Contributing
 

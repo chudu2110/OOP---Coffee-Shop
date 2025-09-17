@@ -62,25 +62,40 @@ public class DatabaseConnection {
     // Initialize database with schema
     public boolean initializeDatabase() {
         try {
-            // Check if database file exists
+            // Ensure DB file exists (will be created on first connection use)
             File dbFile = new File(DATABASE_NAME);
             boolean isNewDatabase = !dbFile.exists();
-            
-            if (isNewDatabase) {
-                System.out.println("Creating new database...");
-                createTables();
+
+            // Always ensure tables/indexes exist
+            createTables();
+
+            // Seed sample data on first run OR when critical tables are empty
+            if (isNewDatabase || isTableEmpty("menu_items")) {
                 insertSampleData();
-                System.out.println("Database initialized successfully with sample data.");
+                System.out.println("Database seeded with sample data.");
             } else {
-                System.out.println("Database already exists.");
+                System.out.println("Database exists with data.");
             }
-            
+
             return true;
-            
+
         } catch (SQLException e) {
             System.err.println("Failed to initialize database: " + e.getMessage());
             return false;
         }
+    }
+
+    // Check if a table has no rows
+    private boolean isTableEmpty(String tableName) {
+        String sql = "SELECT COUNT(1) AS c FROM " + tableName;
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt("c") == 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to check table '" + tableName + "': " + e.getMessage());
+        }
+        return false;
     }
     
     // Create database tables
@@ -223,14 +238,46 @@ public class DatabaseConnection {
     
     // Insert sample data
     private void insertSampleData() throws SQLException {
-        // Sample menu items
-        String insertMenuItems = "INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type) VALUES " +
-            "('Espresso', 'Rich and bold espresso shot', 2.50, 'Coffee', 'Coffee', 'ESPRESSO'), " +
-            "('Americano', 'Espresso with hot water', 3.00, 'Coffee', 'Coffee', 'AMERICANO'), " +
-            "('Latte', 'Espresso with steamed milk', 4.50, 'Coffee', 'Coffee', 'LATTE'), " +
-            "('Cappuccino', 'Espresso with steamed milk and foam', 4.00, 'Coffee', 'Coffee', 'CAPPUCCINO'), " +
-            "('Mocha', 'Espresso with chocolate and steamed milk', 5.00, 'Coffee', 'Coffee', 'MOCHA')";
-        
+        // Sample menu items (Vietnamese categories and items)
+        String insertCoffee = "INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type) VALUES " +
+            "('Cà phê đen nóng', 'Đậm đà, truyền thống', 2.00, 'Cà phê', 'Drink', NULL), " +
+            "('Cà phê đen đá', 'Đậm đà, dùng với đá', 2.00, 'Cà phê', 'Drink', NULL), " +
+            "('Cà phê sữa nóng', 'Sữa đặc và cà phê rang xay', 2.50, 'Cà phê', 'Drink', NULL), " +
+            "('Cà phê sữa đá', 'Bạc xỉu kiểu Việt', 2.50, 'Cà phê', 'Drink', NULL), " +
+            "('Bạc xỉu', 'Sữa nhiều, cà phê ít', 2.80, 'Cà phê', 'Drink', NULL), " +
+            "('Espresso', 'Rich and bold espresso shot', 2.50, 'Cà phê', 'Coffee', 'ESPRESSO'), " +
+            "('Cappuccino', 'Espresso với sữa nóng và foam', 3.80, 'Cà phê', 'Coffee', 'CAPPUCCINO'), " +
+            "('Latte', 'Espresso với sữa nóng', 4.00, 'Cà phê', 'Coffee', 'LATTE'), " +
+            "('Mocha', 'Espresso, chocolate, sữa', 4.20, 'Cà phê', 'Coffee', 'MOCHA'), " +
+            "('Americano', 'Espresso pha nước nóng', 3.00, 'Cà phê', 'Coffee', 'AMERICANO'), " +
+            "('Cold Brew', 'Ủ lạnh 12-24h', 3.50, 'Cà phê', 'Drink', NULL)";
+
+        String insertTea = "INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type) VALUES " +
+            "('Trà đào cam sả', 'Trà đào, cam, sả tươi', 2.80, 'Trà', 'Drink', NULL), " +
+            "('Trà chanh', 'Trà đen với chanh tươi', 2.00, 'Trà', 'Drink', NULL), " +
+            "('Trà đào', 'Trà đen vị đào', 2.50, 'Trà', 'Drink', NULL), " +
+            "('Trà vải', 'Trà đen vị vải', 2.50, 'Trà', 'Drink', NULL), " +
+            "('Trà sữa trân châu', 'Trà sữa kèm trân châu', 3.20, 'Trà', 'Drink', NULL), " +
+            "('Matcha latte', 'Bột trà xanh và sữa', 3.50, 'Trà', 'Drink', NULL), " +
+            "('Trà gạo rang (Hojicha)', 'Hương gạo rang đặc trưng', 3.20, 'Trà', 'Drink', NULL)";
+
+        String insertSmoothieJuice = "INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type) VALUES " +
+            "('Sinh tố xoài', 'Xoài chín xay mịn', 3.00, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Sinh tố bơ', 'Bơ sáp béo mịn', 3.50, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Sinh tố dâu', 'Dâu tươi xay', 3.20, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Nước ép cam', 'Cam vắt nguyên chất', 2.80, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Nước ép dưa hấu', 'Lạnh mát, ít đường', 2.50, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Nước ép táo', 'Táo ép tươi', 2.80, 'Sinh tố & Nước ép', 'Drink', NULL), " +
+            "('Nước ép cà rốt', 'Cà rốt ép tươi', 2.50, 'Sinh tố & Nước ép', 'Drink', NULL)";
+
+        String insertOthers = "INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type) VALUES " +
+            "('Soda chanh', 'Sảng khoái, vị chanh', 2.20, 'Đồ uống khác', 'Drink', NULL), " +
+            "('Soda việt quất', 'Vị việt quất nhẹ', 2.50, 'Đồ uống khác', 'Drink', NULL), " +
+            "('Chocolate nóng', 'Sô cô la nóng', 3.20, 'Đồ uống khác', 'Drink', NULL), " +
+            "('Chocolate đá', 'Sô cô la mát lạnh', 3.20, 'Đồ uống khác', 'Drink', NULL), " +
+            "('Yaourt đá', 'Sữa chua dầm đá', 2.50, 'Đồ uống khác', 'Drink', NULL), " +
+            "('Nước suối', 'Đóng chai', 1.00, 'Đồ uống khác', 'Drink', NULL)";
+
         // Sample customers
         String insertCustomers = "INSERT INTO customers (name, email, phone_number, loyalty_points) VALUES " +
             "('John Doe', 'john.doe@email.com', '555-0101', 25.50), " +
@@ -242,7 +289,10 @@ public class DatabaseConnection {
             "(1, 2), (2, 4), (3, 2), (4, 6), (5, 4)";
         
         Statement stmt = connection.createStatement();
-        stmt.execute(insertMenuItems);
+        stmt.execute(insertCoffee);
+        stmt.execute(insertTea);
+        stmt.execute(insertSmoothieJuice);
+        stmt.execute(insertOthers);
         stmt.execute(insertCustomers);
         stmt.execute(insertTables);
         stmt.close();
