@@ -81,6 +81,11 @@ java -cp ".;sqlite-jdbc.jar;slf4j-api.jar;slf4j-simple.jar" CoffeeShopApp
 java -cp ".:sqlite-jdbc.jar:slf4j-api.jar:slf4j-simple.jar" CoffeeShopApp
 ```
 
+### 5. Database Initialization
+- The application will automatically create `coffee_shop.db` on first run
+- Sample menu items, customers, and tables will be populated
+- No manual database setup required
+
 ## Usage Guide
 
 ### Starting the Application
@@ -114,14 +119,36 @@ java -cp ".:sqlite-jdbc.jar:slf4j-api.jar:slf4j-simple.jar" CoffeeShopApp
 
 ## Database Schema
 
-The system uses SQLite database with the following main tables:
-- `customers` - Customer information
-- `menu_items` - Coffee menu items
-- `orders` - Order records
-- `order_items` - Individual items in orders
-- `payments` - Payment transactions
-- `tables` - Table management
-- `ingredients` - Inventory tracking
+The system uses SQLite database (`coffee_shop.db`) with the following main tables:
+
+### Core Tables
+- **`menu_items`** - Coffee menu items with pricing and descriptions
+- **`customers`** - Customer information and loyalty points
+- **`orders`** - Order records with status tracking
+- **`order_items`** - Individual items within orders
+- **`payments`** - Payment transactions and methods
+- **`tables`** - Table management and reservations
+- **`ingredients`** - Inventory tracking and stock levels
+
+### Sample Menu Items
+The system comes pre-loaded with the following menu items:
+
+#### ☕ Coffee (5 items)
+- **Espresso** - $2.50 - Rich and bold espresso shot
+- **Americano** - $3.00 - Espresso with hot water
+- **Latte** - $4.50 - Espresso with steamed milk
+- **Cappuccino** - $4.00 - Espresso with steamed milk and foam
+- **Mocha** - $5.00 - Espresso with chocolate and steamed milk
+
+#### 🥐 Pastry (2 items)
+- **Croissant** - $3.50 - Fresh buttery croissant
+- **Blueberry Muffin** - $4.00 - Fresh blueberry muffin
+
+#### 🍵 Tea (1 item)
+- **Green Tea** - $2.00 - Premium green tea
+
+### Database Initialization
+The database is automatically created and populated with sample data when the application runs for the first time. The schema includes proper foreign key relationships, indexes for performance, and triggers for data consistency.
 
 ## Project Structure
 
