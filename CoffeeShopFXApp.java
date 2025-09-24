@@ -16,9 +16,14 @@ public class CoffeeShopFXApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        DatabaseConnection.getInstance().initializeDatabase();
+        // Initialize database first and wait for completion
+        DatabaseConnection db = DatabaseConnection.getInstance();
+        if (!db.initializeDatabase()) {
+            alert("Không thể khởi tạo cơ sở dữ liệu");
+            return;
+        }
 
-        Label title = new Label("Coffee Shop - JavaFX");
+        Label title = new Label("Chill Coffee");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         ComboBox<String> categoryFilter = new ComboBox<>();
@@ -86,7 +91,7 @@ public class CoffeeShopFXApp extends Application {
             OrderDAO orderDAO = new OrderDAO();
             int orderId = orderDAO.createOrder(currentOrder);
             if (orderId > 0) {
-                alert("Đã lưu đơn #" + orderId + " - Tổng: $" + String.format("%.2f", currentOrder.getTotalAmount()));
+                alert("Đã lưu đơn #" + orderId + " - Tổng: " + String.format("%.2f", currentOrder.getTotalAmount()));
                 currentOrder.clearOrder();
                 updateOrderArea(orderArea, totalLabel);
             } else {
@@ -107,7 +112,7 @@ public class CoffeeShopFXApp extends Application {
 
         HBox root = new HBox(12, left, right);
         Scene scene = new Scene(root, 760, 520);
-        stage.setTitle("Coffee Shop");
+        stage.setTitle("Chill Coffee");
         stage.setScene(scene);
         stage.show();
         updateOrderArea(orderArea, totalLabel);
@@ -123,11 +128,11 @@ public class CoffeeShopFXApp extends Application {
               .append(String.format("%.2f", item.getMenuItem().calculatePrice() * item.getQuantity()))
               .append("\n");
         }
-        sb.append("\nTạm tính: $").append(String.format("%.2f", currentOrder.getSubtotal()));
-        sb.append("\nThuế: $").append(String.format("%.2f", currentOrder.getTax()));
-        sb.append("\nTổng: $").append(String.format("%.2f", currentOrder.getTotalAmount()));
+        sb.append("\nTạm tính: ").append(String.format("%.2f", currentOrder.getSubtotal()));
+        sb.append("\nThuế: ").append(String.format("%.2f", currentOrder.getTax()));
+        sb.append("\nTổng: ").append(String.format("%.2f", currentOrder.getTotalAmount()));
         orderArea.setText(sb.toString());
-        totalLabel.setText("Tổng: $" + String.format("%.2f", currentOrder.getTotalAmount()));
+        totalLabel.setText("Tổng: " + String.format("%.2f", currentOrder.getTotalAmount()));
     }
 
     private void alert(String msg) {

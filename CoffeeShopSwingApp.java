@@ -17,7 +17,12 @@ public class CoffeeShopSwingApp extends JFrame {
 
     public CoffeeShopSwingApp() {
         super("Coffee Shop - Swing");
-        DatabaseConnection.getInstance().initializeDatabase();
+        // Initialize database first and wait for completion
+        DatabaseConnection db = DatabaseConnection.getInstance();
+        if (!db.initializeDatabase()) {
+            JOptionPane.showMessageDialog(null, "Không thể khởi tạo cơ sở dữ liệu");
+            System.exit(1);
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(780, 560);
         setLocationRelativeTo(null);

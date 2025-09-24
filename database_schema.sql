@@ -143,20 +143,20 @@ CREATE INDEX idx_menu_items_is_available ON menu_items(is_available);
 
 -- Sample menu items
 INSERT INTO menu_items (name, description, base_price, category, item_type, coffee_type, is_available) VALUES
-('Espresso', 'Rich and bold espresso shot', 2.50, 'Coffee', 'Coffee', 'ESPRESSO', TRUE),
-('Americano', 'Espresso with hot water', 3.00, 'Coffee', 'Coffee', 'AMERICANO', TRUE),
-('Latte', 'Espresso with steamed milk', 4.50, 'Coffee', 'Coffee', 'LATTE', TRUE),
-('Cappuccino', 'Espresso with steamed milk and foam', 4.00, 'Coffee', 'Coffee', 'CAPPUCCINO', TRUE),
-('Macchiato', 'Espresso with a dollop of steamed milk', 4.25, 'Coffee', 'Coffee', 'MACCHIATO', TRUE),
-('Mocha', 'Espresso with chocolate and steamed milk', 5.00, 'Coffee', 'Coffee', 'MOCHA', TRUE),
-('Frappuccino', 'Blended iced coffee drink', 5.50, 'Coffee', 'Coffee', 'FRAPPUCCINO', TRUE),
-('Croissant', 'Buttery, flaky pastry', 3.50, 'Pastry', 'Food', NULL, TRUE),
-('Muffin', 'Fresh baked muffin', 2.75, 'Pastry', 'Food', NULL, TRUE),
-('Sandwich', 'Grilled sandwich', 6.50, 'Food', 'Food', NULL, TRUE);
+('Espresso', 'Rich and bold espresso shot', 25.000, 'Coffee', 'Coffee', 'ESPRESSO', TRUE),
+('Americano', 'Espresso with hot water', 30.000, 'Coffee', 'Coffee', 'AMERICANO', TRUE),
+('Latte', 'Espresso with steamed milk', 45.000, 'Coffee', 'Coffee', 'LATTE', TRUE),
+('Cappuccino', 'Espresso with steamed milk and foam', 40.000, 'Coffee', 'Coffee', 'CAPPUCCINO', TRUE),
+('Macchiato', 'Espresso with a dollop of steamed milk', 42.500, 'Coffee', 'Coffee', 'MACCHIATO', TRUE),
+('Mocha', 'Espresso with chocolate and steamed milk', 50.000, 'Coffee', 'Coffee', 'MOCHA', TRUE),
+('Frappuccino', 'Blended iced coffee drink', 55.000, 'Coffee', 'Coffee', 'FRAPPUCCINO', TRUE),
+('Croissant', 'Buttery, flaky pastry', 35.000, 'Pastry', 'Food', NULL, TRUE),
+('Muffin', 'Fresh baked muffin', 27.500, 'Pastry', 'Food', NULL, TRUE),
+('Sandwich', 'Grilled sandwich', 65.000, 'Food', 'Food', NULL, TRUE);
 
 -- Sample customers
 INSERT INTO customers (name, email, phone_number, loyalty_points) VALUES
-('John Doe', 'john.doe@email.com', '555-0101', 25.50),
+('Le Quoc Bao', 'lequocbao1352005@gmail.com', '555-0101', 25.50),
 ('Jane Smith', 'jane.smith@email.com', '555-0102', 15.75),
 ('Bob Johnson', 'bob.johnson@email.com', '555-0103', 42.25),
 ('Alice Brown', 'alice.brown@email.com', '555-0104', 8.00),

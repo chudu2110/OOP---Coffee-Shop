@@ -62,6 +62,14 @@ public class DatabaseConnection {
     // Initialize database with schema
     public boolean initializeDatabase() {
         try {
+            // Ensure connection is valid
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(DATABASE_URL);
+                Statement stmt = connection.createStatement();
+                stmt.execute("PRAGMA foreign_keys = ON;");
+                stmt.close();
+            }
+
             // Ensure DB file exists (will be created on first connection use)
             File dbFile = new File(DATABASE_NAME);
             boolean isNewDatabase = !dbFile.exists();
